@@ -5,3 +5,5 @@
 #define CPU_SUBTRACTION_FLAG_BIT 6 //n
 #define CPU_HALF_CARRY_FLAG_BIT 5 //h
 #define CPU_CARRY_FLAG_BIT 4 //c
+
+#endif
