@@ -6,4 +6,6 @@
 #define CPU_HALF_CARRY_FLAG_BIT 5 //h
 #define CPU_CARRY_FLAG_BIT 4 //c
 
+#include "registers.h"
+
 #endif
