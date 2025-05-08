@@ -1,28 +1,4 @@
-# CC = gcc
-# CFLAGS = -Wall -g -I $(INC)
-# SRC = src
-# INC = include
-# BUILD = build
-# BIN = bin
-
-# all: masochistboy
-
-# clean:
-# 	rm -rf *.o masochistboy
-# 	rm -rf $(BUILD)/*
-# 	rm -rf $(BIN)/*
-
-# cpu.o: $(SRC)/cpu.c $(INC)/cpu.h
-# 	$(CC) $(CFLAGS) -c $(SRC)/cpu.c -o $(BUILD)/cpu.o
-
-# masochistboy.o: $(SRC)/main.c $(INC)/cpu.h
-# 	$(CC) $(CFLAGS) -c $(SRC)/main.c -o $(BUILD)/masochistboy.o
-
-# masochistboy: masochistboy.o cpu.o
-# 	$(CC) $(CFLAGS) -o $(BIN)/masochistboy $(BUILD)/masochistboy.o $(BUILD)/cpu.o
-
-
-CC ?= gcc              # Use gcc by default; can override (e.g., CC=x86_64-w64-mingw32-gcc)
+CC ?= gcc
 CFLAGS = -Wall -g -I $(INC)
 
 SRC = src
@@ -35,29 +11,40 @@ OBJS := $(patsubst $(SRC)/%.c,$(BUILD)/%.o,$(SRCS))
 
 TARGET := $(BIN)/masochistboy
 
-# Allow target OS selection (optional)
-TARGET_OS ?= native     # can be "native", "windows", "linux"
+# Auto-detect target OS or manually set TARGET_OS
+ifeq ($(OS),Windows_NT)
+    TARGET_OS := windows
+else
+    TARGET_OS := linux
+endif
 
-# Adjust flags per OS (optional)
+# Adjust settings based on OS
 ifeq ($(TARGET_OS),windows)
     EXE_EXT := .exe
+    MKDIR_CMD = if not exist $(BUILD) mkdir $(BUILD) & if not exist $(BIN) mkdir $(BIN)
+    RM_CMD = if exist $(BUILD) del /F /Q $(BUILD)\* & if exist $(BIN) del /F /Q $(BIN)\*
     CFLAGS += -DWINDOWS_BUILD
 else
     EXE_EXT :=
+    MKDIR_CMD = mkdir -p $(BUILD) $(BIN)
+    RM_CMD = rm -rf $(BUILD)/* $(BIN)/*
 endif
 
 TARGET := $(BIN)/masochistboy$(EXE_EXT)
 
+# Default target
 all: $(TARGET)
 
+# Build target executable
 $(TARGET): $(OBJS)
-	@mkdir -p $(BIN)
+	$(MKDIR_CMD)
 	$(CC) $(CFLAGS) -o $@ $^
 
+# Compile source files to object files
 $(BUILD)/%.o: $(SRC)/%.c
-	@mkdir -p $(BUILD)
+	$(MKDIR_CMD)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# Clean up build artifacts
 clean:
-	rm -rf $(BUILD)/*
-	rm -rf $(BIN)/*
+	$(RM_CMD)
