@@ -24,6 +24,9 @@ ifeq ($(TARGET_OS),windows)
     MKDIR_CMD = if not exist $(BUILD) mkdir $(BUILD) & if not exist $(BIN) mkdir $(BIN)
     RM_CMD = if exist $(BUILD) del /F /Q $(BUILD)\* & if exist $(BIN) del /F /Q $(BIN)\*
     CFLAGS += -DWINDOWS_BUILD
+    CFLAGS += -IC:\sdl3\include #replace with the path to your SDL3 installation
+    CFLAGS += -mwindows
+    LDFLAGS = -L C:\sdl3\lib -lSDL3 #replace with the path to your SDL3 installation
 else
     EXE_EXT :=
     MKDIR_CMD = mkdir -p $(BUILD) $(BIN)
@@ -38,7 +41,7 @@ all: $(TARGET)
 # Build target executable
 $(TARGET): $(OBJS)
 	$(MKDIR_CMD)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # Compile source files to object files
 $(BUILD)/%.o: $(SRC)/%.c
