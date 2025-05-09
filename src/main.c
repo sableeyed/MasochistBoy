@@ -3,6 +3,7 @@
 #include <time.h>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_video.h>
+#include <windows.h>
 
 int main(int argc, char **argv) {
 
@@ -16,6 +17,21 @@ int main(int argc, char **argv) {
     if(NULL == window) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
         return 1;
+    }
+
+    /*
+     * not portable which kinda defeats the purpose of SDL and cross platform..
+    */
+
+    HWND mboyHwnd = FindWindow(NULL, "MasochistBoy");
+
+    if(mboyHwnd) {
+        HMENU hMenuBar = CreateMenu();
+        HMENU hMenu = CreateMenu();
+        AppendMenu(hMenu, MF_STRING, 1, "About");
+        AppendMenu(hMenu, MF_STRING, 2, "Exit");
+        AppendMenu(hMenuBar, MF_POPUP, (UINT_PTR) hMenu, "File");
+        SetMenu(mboyHwnd, hMenuBar);
     }
 
     while(!done) {
